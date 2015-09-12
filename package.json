@@ -11,5 +11,23 @@
     "email": "manu@nota.io",
     "url": "https://twitter.com/0mbre"
   },
-  "license": "ISC"
+  "keywords": [
+    "koa",
+    "middleware",
+    "session",
+    "cookie",
+    "jwt"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "jsonwebtoken": "^5.0.5"
+  },
+  "devDependencies": {
+    "istanbul-harmony": "0",
+    "koa": "0",
+    "mocha": "2",
+    "should": "6",
+    "supertest": "1"
+  }
 }
