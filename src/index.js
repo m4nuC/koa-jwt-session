@@ -2,18 +2,18 @@
 var jwt = require("jsonwebtoken");
 var debug = require('debug')('jwt-session');
 
-var SECRET = "Shhhhh";
+var SECRET = process.env.SESSIONS_SECRET || "Shuuuu";
 
 var options = {
-  expiresIn:10000
+  expiresIn: process.env.SESSIONS_EXPIRES_IN || 10000
 };
 
-var SESSION_KEY =  ['im a newer secret', 'i like turtle'];
+var SESSION_KEYS =  process.env.SESSIONS_KEYS || ['im a newer secret', 'i like turtle'];
 
 var cookiesOptions = {
   signed: false,
   httpOnly: false,
-  domain: process.env.DOMAIN
+  domain: process.env.SESSIONS_SCOPE
 }
 
 module.exports = function(app) {
@@ -22,7 +22,7 @@ module.exports = function(app) {
     throw new TypeError('app instance required');
   }
 
-  app.context.sessionKey = SESSION_KEY;
+  app.context.sessionKey = SESSION_KEYS;
 
   function JWTSession(ctx) {
     this._sessData= {};
