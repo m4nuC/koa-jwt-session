@@ -5,7 +5,6 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha specs.js --harmony --reporter spec --bail",
-    //"prepublish": "npm run compile",
     "cover": "NODE_ENV=test node_modules/.bin/babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha -- specs.js",
     "compile": "babel -d lib/ src/"
   },
