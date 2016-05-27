@@ -2,15 +2,19 @@
 var jwt = require("jsonwebtoken");
 var debug = require('debug')('jwt-session');
 
-module.exports = function(app, cookiesOptions) {
+module.exports = function(app, options) {
 
-  var SECRET = cookiesOptions.secret;
+  var SECRET = options.secret;
 
-  var options = {
-    expiresIn: cookiesOptions.expiresIn
+  var JWTOptions = {
+    expiresIn: options.expiresIn
   };
 
-  var SESSIONS_KEYS =  cookiesOptions.session_keys;
+  var cookieOptions = {
+    domain: options.domain,
+    signed: options.signed || false,
+    httpOnly: options.httpOnly || false
+  }
 
   if (!app || typeof app.use !== 'function') {
     throw new TypeError('app instance required');
@@ -32,11 +36,9 @@ module.exports = function(app, cookiesOptions) {
   JWTSession.prototype.generate = function( payload ) {
     try {
       debug('Enctrypting JWT with secret: ', SECRET);
-      var token = jwt.sign(payload, SECRET, {
-        expiresIn: options.expiresIn
-      });
-      this._ctx.cookies.set('jwt', token, cookiesOptions);
-      this._ctx.cookies.set('session_data', JSON.stringify(payload), cookiesOptions);
+      var token = jwt.sign(payload, SECRET, JWTOptions);
+      this._ctx.cookies.set('jwt', token, cookieOptions);
+      this._ctx.cookies.set('session_data', JSON.stringify(payload), cookieOptions);
       this._sessData = payload;
       return payload;
     } catch (e) {
@@ -50,8 +52,8 @@ module.exports = function(app, cookiesOptions) {
   }
 
   JWTSession.prototype.clear = function() {
-    this._ctx.cookies.set('jwt', null, cookiesOptions);
-    this._ctx.cookies.set('session_data', null, cookiesOptions);
+    this._ctx.cookies.set('jwt', null, cookieOptions);
+    this._ctx.cookies.set('session_data', null, cookieOptions);
     this._sessData = {};
   }
 

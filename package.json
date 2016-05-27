@@ -1,6 +1,6 @@
 {
   "name": "koa-jwt-session",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Barebone JWT Session management for Koa",
   "main": "lib/index.js",
   "scripts": {
