@@ -2,27 +2,19 @@
 var jwt = require("jsonwebtoken");
 var debug = require('debug')('jwt-session');
 
-var SECRET = process.env.SESSIONS_SECRET || "Shuuuu";
+module.exports = function(app, cookiesOptions) {
 
-var options = {
-  expiresIn: process.env.SESSIONS_EXPIRES_IN || 10000
-};
+  var SECRET = cookiesOptions.secret;
 
-var SESSION_KEYS =  process.env.SESSIONS_KEYS || ['im a newer secret', 'i like turtle'];
+  var options = {
+    expiresIn: cookiesOptions.expiresIn
+  };
 
-var cookiesOptions = {
-  signed: false,
-  httpOnly: false,
-  domain: process.env.SESSIONS_SCOPE
-}
-
-module.exports = function(app) {
+  var SESSIONS_KEYS =  cookiesOptions.session_keys;
 
   if (!app || typeof app.use !== 'function') {
     throw new TypeError('app instance required');
   }
-
-  app.context.sessionKey = SESSION_KEYS;
 
   function JWTSession(ctx) {
     this._sessData= {};
@@ -30,7 +22,6 @@ module.exports = function(app) {
   }
 
   JWTSession.prototype.get = function() {
-    //console.log(this)
     return this._sessData;
   }
 
@@ -40,7 +31,10 @@ module.exports = function(app) {
 
   JWTSession.prototype.generate = function( payload ) {
     try {
-      var token = jwt.sign(payload, SECRET, options);
+      debug('Enctrypting JWT with secret: ', SECRET);
+      var token = jwt.sign(payload, SECRET, {
+        expiresIn: options.expiresIn
+      });
       this._ctx.cookies.set('jwt', token, cookiesOptions);
       this._ctx.cookies.set('session_data', JSON.stringify(payload), cookiesOptions);
       this._sessData = payload;
@@ -51,8 +45,6 @@ module.exports = function(app) {
     return true;
   }
 
-  // For now jsut chekcing if the session object as stuff in it
-  // will suffice to check auth
   JWTSession.prototype.authed = function() {
     return this._sessData && Object.keys(this._sessData).length > 0;
   }
@@ -80,7 +72,8 @@ module.exports = function(app) {
       return await next();
     }
     try {
-      ctx.JWTSession.set( jwt.verify(token, SECRET) );
+      var session = jwt.verify(token, SECRET);
+      ctx.JWTSession.set(session);
     } catch(e) {
       if (e.name === 'TokenExpiredError') {
         ctx.JWTSession.clear();
