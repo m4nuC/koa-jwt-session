@@ -26,7 +26,12 @@ The API is exposed on the context object (`this`) inside downstream middlewares.
 import JWTSession from 'koa-jwt-session';
 import Koa from 'koa';
 const app = new Koa();
-app.use(jwtAuth(app));
+app.use(jwtAuth(app, {
+  secret: "Shhhha",
+  signed: false, // Default to false
+  httpOnly: false, // Default to false
+  domain: process.env.SESSIONS_SCOPE // Cookie scope. Must be set
+}));
 
 // Generate a Session from a controller (route handler)
 async function(ctx, next) {

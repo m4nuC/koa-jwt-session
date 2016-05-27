@@ -10,6 +10,10 @@ module.exports = function(app, options) {
     expiresIn: options.expiresIn
   };
 
+  if(! options.domain) {
+    throw new Error('The domain scope for the cookie is not set. Specify it using the `domain` property on the option object');
+  }
+
   var cookieOptions = {
     domain: options.domain,
     signed: options.signed || false,
