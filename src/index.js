@@ -39,7 +39,6 @@ module.exports = function(app, options) {
 
   JWTSession.prototype.generate = function( payload ) {
     try {
-      debug('Enctrypting JWT with secret: ', SECRET);
       var token = jwt.sign(payload, SECRET, JWTOptions);
       this._ctx.cookies.set('jwt', token, cookieOptions);
       this._ctx.cookies.set('session_data', JSON.stringify(payload), cookieOptions);
